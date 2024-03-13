@@ -1,0 +1,5 @@
+.pixi/
+pixi.lock
+llvm-sycl/pre-installed/llvm-files/
+llvm-sycl/pre-installed/etc/ 
+llvm-sycl/pre-installed/runtimes/ 

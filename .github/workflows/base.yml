@@ -1,0 +1,59 @@
+# This is a basic workflow to help you get started with Actions
+
+name: base-image
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the $default-branch branch
+  push:
+    branches: [ main ]
+    paths:
+      - base/**
+      - .github/base.yml
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
+env:
+  REGISTRY: ghcr.io
+  CUDA_VERSION: 12.3.2
+
+# There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
+jobs:
+  build-and-push-base-image:
+    runs-on: ubuntu-latest
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
+    permissions:
+      contents: read
+      packages: write
+      # 
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    
+      - name: Build and push base image without pre-installed environment
+        run: |
+          cd base/no-install
+          docker build . -t ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION --build-arg CUDA_VERSION=$CUDA_VERSION
+          docker push ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION
+          docker image tag ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION ghcr.io/nagagroup/naga-dev:base-no-install-latest
+          docker push ghcr.io/nagagroup/naga-dev:base-no-install-latest
+
+    
+      - name: Build and push base image with pre-installed environment
+        run: |
+          cd base/pre-installed
+          docker build . -t ghcr.io/nagagroup/naga-dev:base-$CUDA_VERSION --build-arg BASE_IMAGE=ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION
+          docker push ghcr.io/nagagroup/naga-dev:base-$CUDA_VERSION
+          docker image tag ghcr.io/nagagroup/naga-dev:base-$CUDA_VERSION ghcr.io/nagagroup/naga-dev:base-latest
+          docker push ghcr.io/nagagroup/naga-dev:base-latest
+
