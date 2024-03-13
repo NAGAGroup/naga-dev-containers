@@ -6,10 +6,10 @@ on:
   push:
     branches: [ main ]
     paths:
-      - !base/**
-      - !.github/base.yml
-      - .github/llvm-sycl.yml
-      - llvm-sycl/**
+      - '!base/**'
+      - '!.github/base.yml'
+      - '.github/llvm-sycl.yml'
+      - 'llvm-sycl/**'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
