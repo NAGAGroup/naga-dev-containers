@@ -20,6 +20,8 @@ LABEL org.opencontainers.image.source=https://github.com/NAGAGroup/naga-dev-cont
 
 ARG DOCKER_BUILD=false
 
+ARG CMAKE_BUILD_PARALLEL_LEVEL=8
+
 RUN bash --login -c "echo Installing devenv packages"
 RUN if [ "$DOCKER_BUILD" = "false" ]; then bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml build-llvm"; fi
 RUN if [ "$DOCKER_BUILD" = "false" ]; then bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml install-llvm"; fi
