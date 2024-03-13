@@ -2,19 +2,14 @@ name: llvm-sycl-image
 
 # Controls when the action will run. 
 on:
-  # Triggers the workflow on push or pull request events but only for the $default-branch branch
-  push:
-    branches: [ main ]
-    paths:
-      - '!base/**'
-      - '!.github/base.yml'
-      - '.github/llvm-sycl.yml'
-      - 'llvm-sycl/**'
-
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
   workflow_call:
+    branches: [ main ]
+    paths:
+      - '.github/llvm-sycl.yml'
+      - 'llvm-sycl/**'
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
