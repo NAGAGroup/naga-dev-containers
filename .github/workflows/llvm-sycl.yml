@@ -1,6 +1,4 @@
-# This is a basic workflow to help you get started with Actions
-
-name: base-image
+name: llvm-sycl-image
 
 # Controls when the action will run. 
 on:
@@ -8,20 +6,23 @@ on:
   push:
     branches: [ main ]
     paths:
-      - base/**
-      - .github/base.yml
+      - !base/**
+      - !.github/base.yml
+      - .github/llvm-sycl.yml
+      - llvm-sycl/**
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+  workflow_call:
+
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
-  CUDA_VERSION: 12.3.2
 
 # There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
 jobs:
-  build-and-push-base-image:
+  build-and-push-llvm-sycl-image:
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
@@ -42,20 +43,16 @@ jobs:
     
       - name: Build and push base image without pre-installed environment
         run: |
-          cd base/no-install
-          docker build . -t ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION --build-arg CUDA_VERSION=$CUDA_VERSION
-          docker push ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION
-          docker image tag ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION ghcr.io/nagagroup/naga-dev:base-no-install-latest
-          docker push ghcr.io/nagagroup/naga-dev:base-no-install-latest
+          cd llvm-sycl/no-install
+          docker build . -t naga-dev:llvm-sycl-no-install-latest
+          docker push naga-dev:llvm-sycl-no-install-latest ghcr.io/nagagroup/naga-dev:llvm-sycl-no-install-latest
 
     
       - name: Build and push base image with pre-installed environment
         run: |
-          cd base/pre-installed
-          docker build . -t ghcr.io/nagagroup/naga-dev:base-$CUDA_VERSION --build-arg BASE_IMAGE=ghcr.io/nagagroup/naga-dev:base-no-install-$CUDA_VERSION
-          docker push ghcr.io/nagagroup/naga-dev:base-$CUDA_VERSION
-          docker image tag ghcr.io/nagagroup/naga-dev:base-$CUDA_VERSION ghcr.io/nagagroup/naga-dev:base-latest
-          docker push ghcr.io/nagagroup/naga-dev:base-latest
-  build-llvm-images:
-    uses: ./.github/workflows/llvm-sycl-image.yml
+          cd llvm-sycl/pre-installed
+          mkdir -p llvm-files
+          chmod a+rwx llvm-files
+          docker build . -t ghcr.io/nagagroup/naga-dev:llvm-sycl-latest -v $PWD/llvm-files/:/home/gpu-dev/.local/share/devenv/llvm-files:Z
+          docker push ghcr.io/nagagroup/naga-dev:llvm-sycl-latest
 

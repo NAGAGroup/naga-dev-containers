@@ -1,0 +1,9 @@
+
+
+[tasks]
+clone-llvm-sycl = "sh clone_llvm.sh" 
+install-intel-drivers = { cmd = "sh install_intel_drivers.sh", depends_on = ["clone-llvm-sycl"] }
+configure-llvm-build = { cmd = "sh configure.sh", depends_on = ["install-intel-drivers"] }
+build-llvm = { cmd = "sh build_sycl.sh", depends_on = ["configure-llvm-build"] }
+install-llvm = { cmd = "sh install_sycl.sh", depends_on = ["build-llvm"] }
+install-llvm-and-cleanup = { cmd = "rm -rf $PIXI_PROJECT_ROOT/llvm-*", depends_on = ["install-llvm"] }
