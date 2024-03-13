@@ -18,6 +18,9 @@ LABEL org.opencontainers.image.source=https://github.com/NAGAGroup/naga-dev-cont
 # RUN sudo chown -R root:root /runtimes
 # RUn sudo chmod +x /runtimes/oneapi-tbb/env/vars.sh
 
+ARG DOCKER_BUILD=false
+
 RUN bash --login -c "echo Installing devenv packages"
-RUN bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml build-llvm"
-RUN bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml install-llvm"
+RUN if [ "$DOCKER_BUILD" = "false" ]; then bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml build-llvm"; fi
+RUN if [ "$DOCKER_BUILD" = "false" ]; then bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml install-llvm"; fi
+RUN if [ "$DOCKER_BUILD" = "true" ]; then bash --login -c "pixi run --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml install-llvm-and-cleanup"; fi

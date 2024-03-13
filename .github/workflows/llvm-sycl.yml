@@ -54,8 +54,6 @@ jobs:
       - name: Build and push base image with pre-installed environment
         run: |
           cd llvm-sycl/pre-installed
-          mkdir -p llvm-files
-          chmod a+rwx llvm-files
-          docker build . -t ghcr.io/nagagroup/naga-dev:llvm-sycl-latest -v $PWD/llvm-files/:/home/gpu-dev/.local/share/devenv/llvm-files:Z
+          docker build . -t ghcr.io/nagagroup/naga-dev:llvm-sycl-latest --build-arg DOCKER_BUILD=true
           docker push ghcr.io/nagagroup/naga-dev:llvm-sycl-latest
 
