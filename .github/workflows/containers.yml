@@ -1,0 +1,41 @@
+name: build-container-images
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the $default-branch branch
+  push:
+    branches: [ main ]
+
+# There is a single job in this workflow. It's configured to run on the latest available version of Ubuntu.
+jobs:
+  generate-build-matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      build-base: ${{ steps.filter.outputs.build-base }}
+      build-llvm: ${{ steps.filter.outputs.build-llvm }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          build-base:
+            - '.github/workflows/base.yml'
+            - 'base/**'
+          build-llvm:
+            - '.github/workflows/llvm-sycl.yml'
+            - 'llvm-sycl/**'
+  build-base:
+    needs: generate-build-matrix
+    if: ${{ needs.generate-build-matrix.outputs.build-base == 'true' }}
+    uses: ./.github/workflows/base.yml
+
+  build-llvm:  # This job should run if build-llvm is true
+    needs: generate-build-matrix
+    if: ${{ needs.generate-build-matrix.outputs.build-llvm == 'true' && needs.generate-build-matrix.outputs.build-base == 'false'}}
+    uses: ./.github/workflows/llvm-sycl.yml
+
+  build-llvm-after-base:  # This job should run if build-base is true, and should run after build-base
+    needs: [build-base, generate-build-matrix]
+    if: ${{ needs.generate-build-matrix.outputs.build-base == 'true' }}
+    uses: ./.github/workflows/llvm-sycl.yml
