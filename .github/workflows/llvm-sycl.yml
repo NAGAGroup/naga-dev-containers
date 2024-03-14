@@ -46,6 +46,6 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf "/usr/local/share/boost"
           sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-          docker build . -t ghcr.io/nagagroup/naga-dev:llvm-sycl-latest --build-arg DOCKER_BUILD=true
-          docker push ghcr.io/nagagroup/naga-dev:llvm-sycl-latest --build-arg CMAKE_BUILD_PARALLEL_LEVEL=4
+          docker build . -t ghcr.io/nagagroup/naga-dev:llvm-sycl-latest --build-arg DOCKER_BUILD=true --build-arg CMAKE_BUILD_PARALLEL_LEVEL=4
+          docker push ghcr.io/nagagroup/naga-dev:llvm-sycl-latest
 
