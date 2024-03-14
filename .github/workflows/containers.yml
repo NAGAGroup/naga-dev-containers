@@ -13,6 +13,7 @@ jobs:
     outputs:
       build-base: ${{ steps.filter.outputs.build-base }}
       build-llvm: ${{ steps.filter.outputs.build-llvm }}
+      build-acpp: ${{ steps.filter.outputs.build-acpp }}
     steps:
     - uses: actions/checkout@v2
     - uses: dorny/paths-filter@v2
@@ -25,6 +26,9 @@ jobs:
           build-llvm:
             - '.github/workflows/llvm-sycl.yml'
             - 'llvm-sycl/**'
+          build-acpp:
+            - '.github/workflows/acpp.yml'
+            - 'acpp/**'
   build-base:
     needs: generate-build-matrix
     if: ${{ needs.generate-build-matrix.outputs.build-base == 'true' }}
@@ -39,3 +43,13 @@ jobs:
     needs: [build-base, generate-build-matrix]
     if: ${{ needs.generate-build-matrix.outputs.build-base == 'true' }}
     uses: ./.github/workflows/llvm-sycl.yml
+
+  build-acpp:  # This job should run if build-llvm is true
+    needs: generate-build-matrix
+    if: ${{ needs.generate-build-matrix.outputs.build-acpp == 'true' && needs.generate-build-matrix.outputs.build-base == 'false'}}
+    uses: ./.github/workflows/acpp.yml
+
+  build-acpp-after-base:  # This job should run if build-base is true, and should run after build-base
+    needs: [build-base, generate-build-matrix]
+    if: ${{ needs.generate-build-matrix.outputs.build-base == 'true' }}
+    uses: ./.github/workflows/acpp.yml

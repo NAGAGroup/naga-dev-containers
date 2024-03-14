@@ -5,3 +5,5 @@ llvm-sycl/pre-installed/etc/
 llvm-sycl/pre-installed/runtimes/ 
 
 llvm-sycl/pre-installed/image-files/
+
+acpp/pre-installed/acpp-files/

@@ -1,0 +1,8 @@
+
+
+[tasks]
+clone-acpp-sycl = "sh clone_acpp.sh" 
+configure-acpp-build = { cmd = "sh configure.sh", depends_on = ["clone-acpp-sycl"] }
+build-acpp = { cmd = "sh build_sycl.sh", depends_on = ["configure-acpp-build"] }
+install-acpp = { cmd = "sh install_sycl.sh", depends_on = ["build-acpp"] }
+install-acpp-and-cleanup = { cmd = "rm -rf $PIXI_PROJECT_ROOT/acpp-*", depends_on = ["install-acpp"] }
