@@ -6,4 +6,6 @@ llvm-sycl/pre-installed/runtimes/
 
 llvm-sycl/pre-installed/image-files/
 
+**/*.bak
+
 acpp/pre-installed/acpp-files/
