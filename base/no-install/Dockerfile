@@ -44,7 +44,7 @@ RUN groupadd --gid $USER_GID $USERNAME \
     # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
     && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
     && chmod 0440 /etc/sudoers.d/$USERNAME
-RUN chpasswd gpu-dev <<< "gpu-dev:naga_is_awesome"
+RUN chpasswd $USERNAME <<< "$USERNAME:naga_is_awesome"
 
 # Extras that I have found useful for base image
 RUN sudo dnf install -y kitty-terminfo git dnf-plugins-core
@@ -58,14 +58,14 @@ RUN sudo dnf copr enable atim/bottom -y
 RUN sudo dnf install bottom -y
 
 # Build and install pixi from source, hopefully fixes issue with cargo panic
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y -q
-RUN echo "source /home/gpu-dev/.cargo/env" >> /home/$USERNAME/.bashrc
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y -q --no-modify-path
+RUN echo "source /home/$USERNAME/.cargo/env" >> /home/$USERNAME/.bashrc
 RUN sudo dnf install perl openssl-devel gcc-toolset-12 -y
 RUN source /opt/rh/gcc-toolset-12/enable && bash --login -c "cargo install --locked --git https://github.com/prefix-dev/pixi.git"
 
 # Dev tools
 COPY ./devenv /home/$USERNAME/.local/share/devenv
-RUN sudo chown -R gpu-dev:gpu-dev /home/$USERNAME/.local/share/devenv/
+RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/.local/share/devenv/
 # RUN bash --login -c "pixi install --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml"
 RUN echo "eval \"\$(pixi shell-hook --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml)\"" >> /home/$USERNAME/.bashrc
 RUN bash --norc -c "/home/$USERNAME/.cargo/bin/pixi add --no-install --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml cuda=$CUDA_VERSION"
