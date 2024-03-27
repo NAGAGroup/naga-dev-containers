@@ -59,7 +59,7 @@ RUN sudo dnf install bottom -y
 
 # Build and install pixi from source, hopefully fixes issue with cargo panic
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y -q --no-modify-path
-RUN echo "source /home/$USERNAME/.cargo/env" >> /home/$USERNAME/.bashrc
+RUN echo "export PATH=/home/$USERNAME/.cargo/bin:$PATH" >> /home/$USERNAME/.bashrc
 RUN sudo dnf install perl openssl-devel gcc-toolset-12 -y
 RUN source /opt/rh/gcc-toolset-12/enable && bash --login -c "cargo install --locked --git https://github.com/prefix-dev/pixi.git"
 
