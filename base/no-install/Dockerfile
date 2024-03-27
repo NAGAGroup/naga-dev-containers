@@ -65,10 +65,11 @@ RUN source /opt/rh/gcc-toolset-12/enable && bash --login -c "cargo install --loc
 
 # Dev tools
 COPY ./devenv /home/$USERNAME/.local/share/devenv
-RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/.local/share/devenv/
 # RUN bash --login -c "pixi install --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml"
 RUN echo "eval \"\$(pixi shell-hook --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml)\"" >> /home/$USERNAME/.bashrc
 RUN bash --norc -c "/home/$USERNAME/.cargo/bin/pixi add --no-install --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml cuda=$CUDA_VERSION"
+RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/
+RUN sudo chmod -R a+rwx /home/$USERNAME/
 
 
  # Entrypoint
