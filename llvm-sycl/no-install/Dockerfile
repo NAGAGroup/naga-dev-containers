@@ -4,7 +4,7 @@ FROM $BASE_IMAGE
 
 LABEL org.opencontainers.image.source=https://github.com/NAGAGroup/naga-dev-containers
 
-RUN bash --norc -c "/home/gpu-dev/.cargo/bin/pixi add --no-install --manifest-path /home/gpu-dev/.local/share/devenv/pixi.toml \ 
+RUN pixi add --no-install --manifest-path $DEVENV/pixi.toml \ 
   cffi \ 
   ocl-icd-system \ 
   libva-utils \ 
@@ -19,12 +19,11 @@ RUN bash --norc -c "/home/gpu-dev/.cargo/bin/pixi add --no-install --manifest-pa
   vulkan-headers \ 
   jq \ 
   intel-opencl-rt \ 
-  pocl"
+  pocl
 
-RUN echo "if [ -f /runtimes/oneapi-tbb/env/vars.sh ]; then source /runtimes/oneapi-tbb/env/vars.sh; fi" >> /home/gpu-dev/.bashrc
+RUN echo "if [ -f /runtimes/oneapi-tbb/env/vars.sh ]; then source /runtimes/oneapi-tbb/env/vars.sh; fi" >> $DEVENV/env.sh
 
 # Installation tasks specific to the image
-COPY ./*.sh /home/gpu-dev/.local/share/devenv/
+COPY ./*.sh $DEVENV/
 COPY ./tasks.txt /tmp/tasks.txt
-RUN cat /tmp/tasks.txt >> /home/gpu-dev/.local/share/devenv/pixi.toml && sudo rm /tmp/tasks.txt
-RUN sudo chown -R gpu-dev:gpu-dev /home/gpu-dev/.local/share/devenv
+RUN cat /tmp/tasks.txt >> $DEVENV/pixi.toml && sudo rm /tmp/tasks.txt

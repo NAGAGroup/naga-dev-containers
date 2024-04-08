@@ -31,20 +31,7 @@ RUN dnf install /tmp/VirtualGL-3.1.x86_64.rpm -y
 RUN wget "https://sourceforge.net/projects/turbovnc/files/3.0.3/turbovnc-3.0.3.x86_64.rpm/download" -O /tmp/turbovnc-3.0.3.x86_64.rpm
 RUN dnf install /tmp/turbovnc-3.0.3.x86_64.rpm -y
 
-# Setup User
-ARG USERNAME=gpu-dev
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
-
 RUN dnf install passwd shadow-utils sudo -y
-
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    #
-    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-    && chmod 0440 /etc/sudoers.d/$USERNAME
-RUN chpasswd $USERNAME <<< "$USERNAME:naga_is_awesome"
 
 # Extras that I have found useful for base image
 RUN sudo dnf install -y kitty-terminfo git dnf-plugins-core
@@ -59,20 +46,17 @@ RUN sudo dnf install bottom -y
 
 # Build and install pixi from source, hopefully fixes issue with cargo panic
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y -q --no-modify-path
-RUN echo "export PATH=/home/$USERNAME/.cargo/bin:$PATH" >> /home/$USERNAME/.bashrc
+RUN mv $HOME/.cargo /opt/cargo
+ENV PATH=/opt/cargo/bin:$PATH
+ENV CARGO_HOME=/opt/cargo
 RUN sudo dnf install perl openssl-devel gcc-toolset-12 -y
-RUN source /opt/rh/gcc-toolset-12/enable && bash --login -c "cargo install --locked --git https://github.com/prefix-dev/pixi.git"
+RUN source /opt/rh/gcc-toolset-12/enable; cargo install --locked --git https://github.com/prefix-dev/pixi.git
 
 # Dev tools
-COPY ./devenv /home/$USERNAME/.local/share/devenv
-# RUN bash --login -c "pixi install --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml"
-RUN sudo chown -R $USERNAME:$USERNAME /home/$USERNAME/
-RUN echo "eval \"\$(pixi shell-hook --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml)\"" >> /home/$USERNAME/.bashrc
-RUN bash --norc -c "/home/$USERNAME/.cargo/bin/pixi add --no-install --manifest-path /home/$USERNAME/.local/share/devenv/pixi.toml cuda=$CUDA_VERSION"
-
-# Permissions stuffs
-RUN sudo chmod -R a+rwx /home/$USERNAME/
-RUN sudo chmod 1777 /tmp
+COPY ./devenv /opt/devenv
+ENV DEVENV=/opt/devenv
+RUN echo "eval \"\$(pixi shell-hook --manifest-path $DEVENV/pixi.toml)\"" >> /opt/devenv/env.sh
+RUN pixi add --no-install --manifest-path $DEVENV/pixi.toml cuda=$CUDA_VERSION
 
 
  # Entrypoint
