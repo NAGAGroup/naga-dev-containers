@@ -11,6 +11,9 @@ cmake --build $PIXI_PROJECT_ROOT/llvm-files/build --target deploy-sycl-toolchain
 # cmake --build /usr/local/sycl --target install-llvm-size
 # cmake --build /usr/local/sycl --target install-llvm-cov
 # cmake --build /usr/local/sycl --target install-llvm-profdata
-cmake --install $PIXI_PROJECT_ROOT/llvm-files/build --prefix $PIXI_PROJECT_ROOT/.pixi/envs/default
+mkdir -p /opt/llvm-sycl
+cmake --install $PIXI_PROJECT_ROOT/llvm-files/build --prefix /opt/llvm-sycl
+
+chmod -R 777 /opt/llvm-sycl
 
 echo "LLVM SYCL installed! To enable Intel OpenCL drivers, run \"source \$HOME/.bashrc\""

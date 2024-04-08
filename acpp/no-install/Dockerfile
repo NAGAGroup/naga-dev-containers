@@ -24,3 +24,5 @@ RUN pixi add --no-install --manifest-path $DEVENV/pixi.toml \
 COPY ./*.sh $DEVENV/
 COPY ./tasks.txt /tmp/tasks.txt
 RUN cat /tmp/tasks.txt >> $DEVENV/pixi.toml && sudo rm /tmp/tasks.txt
+
+ENV PATH=/opt/acpp/bin:$PATH
