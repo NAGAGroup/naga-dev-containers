@@ -29,4 +29,5 @@ COPY ./tasks.txt /tmp/tasks.txt
 RUN cat /tmp/tasks.txt >> $DEVENV/pixi.toml && sudo rm /tmp/tasks.txt
 
 ENV PATH=/opt/llvm-sycl/bin:$PATH
-ENV LD_LIBRARY_PATH=/opt/llvm-sycl/lib:/opt/llvm-sycl/lib64:$LD_LIBRARY_PATH
+
+COPY env.sh $DEVENV/env.sh

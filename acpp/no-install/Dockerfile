@@ -26,3 +26,5 @@ COPY ./tasks.txt /tmp/tasks.txt
 RUN cat /tmp/tasks.txt >> $DEVENV/pixi.toml && sudo rm /tmp/tasks.txt
 
 ENV PATH=/opt/acpp/bin:$PATH
+
+COPY env.sh $DEVENV/env.sh

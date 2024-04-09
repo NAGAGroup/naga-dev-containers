@@ -23,13 +23,13 @@ jobs:
           build-base:
             - '.github/workflows/containers.yml'
             - '.github/workflows/base.yml'
-            - 'base/'
+            - 'base/**'
           build-llvm:
             - '.github/workflows/llvm-sycl.yml'
-            - 'llvm-sycl/'
+            - 'llvm-sycl/**'
           build-acpp:
             - '.github/workflows/acpp.yml'
-            - 'acpp/'
+            - 'acpp/**'
   build-base:
     needs: generate-build-matrix
     if: ${{ needs.generate-build-matrix.outputs.build-base == 'true' }}
